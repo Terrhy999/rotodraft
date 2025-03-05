@@ -6,7 +6,7 @@ import eslintConfigPrettier from "eslint-config-prettier";
 
 export default tseslint.config(
   {
-    ignores: ["eslint.config.mjs"]
+    ignores: ["eslint.config.mjs", "dist/"],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,

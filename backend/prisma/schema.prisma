@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Card {
+  id                     String      @id @unique
+  oracle_id              String
+  name                   String
+  uri                    String
+  scryfallUri            String
+  layout                 String
+  colorIdentity          String[]
+  setId                  String
+  set                    String
+  setName                String
+  setType                String
+  setUri                 String
+  setSearchUri           String
+  scryfallSetUri         String
+  booster                Boolean
+  imageUriSmall          String?
+  imageUriNormal         String?
+  imageUriLarge          String?
+  imageUriPng            String?
+  imageUriArtCrop        String?
+  imageUriBorderCrop     String?
+  backImageUriSmall      String?
+  backImageUriNormal     String?
+  backImageUriLarge      String?
+  backImageUriPng        String?
+  backImageUriArtCrop    String?
+  backImageUriBorderCrop String?
+  cardPoolEntries        DraftPool[]
+}
+
+model DraftPool {
+  id         String      @id @default(uuid())
+  draftId    Int
+  cardId     String
+  count      Int         @default(1)
+  draftPicks DraftPick[]
+  card       Card        @relation(fields: [cardId], references: [id])
+  draft      Draft       @relation(fields: [draftId], references: [id])
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  discordId String    @unique
+  drafter   Drafter[]
+}
+
+model Draft {
+  id        Int         @id @default(autoincrement())
+  name      String
+  createdAt DateTime    @default(now())
+  status    String      @default("created")
+  picks     DraftPick[]
+  cardPool  DraftPool[]
+  drafters  Drafter[]
+}
+
+model Drafter {
+  id         Int         @id @default(autoincrement())
+  draftId    Int
+  userId     Int
+  draftOrder Int
+  draftPicks DraftPick[]
+  draft      Draft       @relation(fields: [draftId], references: [id])
+  user       User        @relation(fields: [userId], references: [id])
+}
+
+model DraftPick {
+  id          Int       @id @default(autoincrement())
+  draftId     Int
+  drafterId   Int
+  draftPoolId String
+  pickNumber  Int
+  pickedAt    DateTime?
+  draft       Draft     @relation(fields: [draftId], references: [id])
+  draftPool   DraftPool @relation(fields: [draftPoolId], references: [id])
+  drafter     Drafter   @relation(fields: [drafterId], references: [id])
+}
